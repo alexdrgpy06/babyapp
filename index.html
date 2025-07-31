@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de horarios del bebé</title>
+  <!-- Link to web app manifest -->
+  <link rel="manifest" href="manifest.json">
+  <!-- Basic styling -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-title">Control de horarios del bebé</h1>
+  </header>
+  <main>
+    <!-- Section to add a new activity -->
+    <section id="addTaskSection" class="card">
+      <h2>Agregar nueva actividad</h2>
+      <form id="taskForm" autocomplete="off">
+        <div class="form-group">
+          <label for="taskCategory">Categoría</label>
+          <select id="taskCategory" required>
+            <option value="medicamento">Medicamento</option>
+            <option value="toma_leche">Toma de leche</option>
+            <option value="cambio_pañal">Cambio de pañal</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="taskName">Descripción</label>
+          <input type="text" id="taskName" placeholder="Ej. Jarabe, Leche..." required>
+        </div>
+        <div class="form-group">
+          <label for="taskLastTime">Última vez</label>
+          <input type="datetime-local" id="taskLastTime" required>
+        </div>
+        <div class="form-group">
+          <label for="taskInterval">Intervalo (horas)</label>
+          <input type="number" id="taskInterval" min="0.1" step="0.1" value="4" required>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="primary-btn">Agregar actividad</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Section listing all scheduled activities -->
+    <section id="taskListSection" class="card">
+      <h2>Actividades programadas</h2>
+      <div id="taskList" class="task-list">
+        <!-- Dynamically populated -->
+      </div>
+    </section>
+  </main>
+  <footer class="app-footer">
+    <p>Desarrollado por tu asistente AI</p>
+  </footer>
+
+  <!-- Main JavaScript file -->
+  <script src="app.js"></script>
+</body>
+</html>
