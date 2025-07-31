@@ -12,6 +12,7 @@
   // DOM references
   const taskForm = document.getElementById('taskForm');
   const taskListEl = document.getElementById('taskList');
+  const darkModeToggle = document.getElementById('darkModeToggle');
 
   // In-memory store of tasks
   let tasks = [];
@@ -94,6 +95,38 @@
   }
 
   /**
+   * Theme management
+   */
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      document.body.classList.add('dark');
+      if (darkModeToggle) darkModeToggle.checked = true;
+    } else {
+      document.body.classList.remove('dark');
+      if (darkModeToggle) darkModeToggle.checked = false;
+    }
+    updateThemeColor(theme);
+  }
+
+  function loadTheme() {
+    return localStorage.getItem('theme') || 'light';
+  }
+
+  function saveTheme(theme) {
+    localStorage.setItem('theme', theme);
+  }
+
+  function updateThemeColor(theme) {
+    const meta = document.getElementById('themeColor');
+    if (!meta) return;
+    if (theme === 'dark') {
+      meta.setAttribute('content', '#1e1e1e');
+    } else {
+      meta.setAttribute('content', '#4caf50');
+    }
+  }
+
+  /**
    * Schedule a notification and reminder for a given task. Clears existing
    * timers for that task before scheduling a new one.
    *
@@ -126,11 +159,17 @@
     if ('Notification' in window && Notification.permission === 'granted') {
       const title = `Recordatorio de ${formatCategory(task.category)}`;
       const body = `Es hora de ${task.name}.`;
-      try {
-        new Notification(title, { body: body });
-      } catch (err) {
-        console.warn('No se pudo mostrar la notificación:', err);
-      }
+      navigator.serviceWorker.getRegistration().then(reg => {
+        if (reg && reg.showNotification) {
+          reg.showNotification(title, { body });
+        } else {
+          try {
+            new Notification(title, { body });
+          } catch (err) {
+            console.warn('No se pudo mostrar la notificación:', err);
+          }
+        }
+      });
     }
     // Update the lastTime to the current nextDue and compute new nextDue
     task.lastTime = task.nextDue;
@@ -342,6 +381,16 @@
    */
   function init() {
     requestNotificationPermission();
+    // Theme initialization
+    const storedTheme = loadTheme();
+    applyTheme(storedTheme);
+    if (darkModeToggle) {
+      darkModeToggle.addEventListener('change', () => {
+        const theme = darkModeToggle.checked ? 'dark' : 'light';
+        applyTheme(theme);
+        saveTheme(theme);
+      });
+    }
     loadTasks();
     // Render tasks
     tasks.forEach(task => {
